@@ -1,0 +1,46 @@
+# Navigation menu
+menu:
+  - name: 首页
+    url: /
+  - name: 归档
+    url: /archives
+  - name: 分类
+    url: /categories
+  - name: 标签
+    url: /tags
+#  - name: 关于
+#    url: /about
+#  - name: GitHub
+#    url: https://github.com
+#    # Open in new tab
+#    target: _blank
+
+site:
+  favicon: /favicon.svg
+  # Whether to display the seal (stamp) in the header
+  seal: true
+  rss:
+    enabled: false
+    path: /atom.xml
+
+# Analytics
+analytics:
+  # Only support Google Analytics 4
+  google:
+    enabled: false
+    id: ""
+
+# Comment systems
+comments:
+  enabled: false
+  provider: disqus
+  disqus:
+    shortname: ""
+
+# Excerpt settings
+excerpt:
+  # If post has <!-- more -->, use it.
+  # Otherwise fallback to auto-truncated excerpt.
+  fallback:
+    enabled: true
+    length: 200
