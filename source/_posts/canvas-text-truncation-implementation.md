@@ -1,6 +1,6 @@
 ---
 title: Canvas文本截断的实现与优化
-date: 2025-06-03
+date: 2025-06-03 12:00:00
 tags:
   - Canvas
   - JavaScript
