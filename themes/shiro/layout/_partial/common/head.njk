@@ -2,6 +2,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="TOKp9TURALLG1IyalGjG0gkN8tbKELidwg_JQzMmkZo" />
+
     <!-- Title -->
     <title>{% if is_home() %}{{ config.title }}{% elif is_post() %}{{ page.title }} | {{ config.title }}{% elif is_archive() %}归档 | {{ config.title }}{% elif is_category() %}{{ page.category }} | {{ config.title }}{% elif is_tag() %}{{ page.tag }} | {{ config.title }}{% else %}{{ page.title }} | {{ config.title }}{% endif %}</title>
 
