@@ -4,21 +4,26 @@
 
 # Site
 title: Taiiiyang
-subtitle: ""
-description: ""
+subtitle: "以夜为笺，寄心成简"
+description: "Taiiiyang的技术博客，分享前端开发、JavaScript、Canvas、V8引擎等技术文章"
 keywords:
-author: John Doe
+  - 前端开发
+  - JavaScript
+  - Canvas
+  - V8
+  - 技术博客
+author: Taiiiyang
 language: zh-CN
-timezone: ""
+timezone: "Asia/Shanghai"
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://homepage-lake-theta.vercel.app
+url: https://www.taiiiyang.com
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
-  trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
-  trailing_html: true # Set to false to remove trailing '.html' from permalinks
+  trailing_index: false
+  trailing_html: false
 
 # Directory
 source_dir: source
@@ -102,3 +107,22 @@ theme: shiro
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: ""
+
+# Sitemap
+sitemap:
+  path: sitemap.xml
+  rel: false
+  tags: true
+  categories: true
+
+# RSS Feed
+feed:
+  enable: true
+  type: atom
+  path: atom.xml
+  limit: 20
+  content: true
+  content_limit: 140
+  order_by: -date
+  icon: /favicon.svg
+  autodiscovery: true

@@ -20,8 +20,19 @@ site:
   # Whether to display the seal (stamp) in the header
   seal: true
   rss:
-    enabled: false
+    enabled: true
     path: /atom.xml
+
+# SEO Settings
+seo:
+  # Default OG image for posts without cover image
+  default_image: /images/og-default.jpg
+  # Twitter username without @
+  twitter_site: ""
+  # Publisher info for structured data
+  publisher:
+    name: Taiiiyang
+    logo: /favicon.svg
 
 # Analytics
 analytics:

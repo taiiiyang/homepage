@@ -1,11 +1,155 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% if is_home() %}{{ config.title | default("白夜書簡", true) }}{% elif is_post() %}{{ page.title }} | {{ config.title | default("白夜書簡", true) }}{% else %}{{ page.title }} | {{ config.title | default("白夜書簡", true) }}{% endif %}</title>
+
+    <!-- Title -->
+    <title>{% if is_home() %}{{ config.title }}{% elif is_post() %}{{ page.title }} | {{ config.title }}{% elif is_archive() %}归档 | {{ config.title }}{% elif is_category() %}{{ page.category }} | {{ config.title }}{% elif is_tag() %}{{ page.tag }} | {{ config.title }}{% else %}{{ page.title }} | {{ config.title }}{% endif %}</title>
+
+    {# Generate page description #}
+    {% if is_post() %}
+        {% if page.description %}
+            {% set pageDescription = page.description %}
+        {% elif page.excerpt %}
+            {% set pageDescription = page.excerpt | striptags | trim | truncate(160) %}
+        {% else %}
+            {% set pageDescription = config.description %}
+        {% endif %}
+    {% elif is_page() and page.description %}
+        {% set pageDescription = page.description %}
+    {% else %}
+        {% set pageDescription = config.description %}
+    {% endif %}
+
+    <!-- Meta Description -->
+    <meta name="description" content="{{ pageDescription | striptags | trim }}" />
+
+    <!-- Keywords -->
+    {% if is_post() and page.tags and page.tags.length > 0 %}
+        {% set tagNames = [] %}
+        {% for tag in page.tags.toArray() %}
+            {% set tagNames = (tagNames.push(tag.name), tagNames) %}
+        {% endfor %}
+        <meta name="keywords" content="{{ tagNames | join(', ') }}" />
+    {% elif config.keywords and config.keywords.length > 0 %}
+        <meta name="keywords" content="{{ config.keywords | join(', ') }}" />
+    {% endif %}
+
+    <!-- Author -->
+    <meta name="author" content="{{ config.author }}" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ config.url }}{{ url_for(page.path) }}" />
 
     <!-- Favicon -->
     {% if theme.site.favicon %}
     <link rel="icon" href="{{ url_for(theme.site.favicon) }}" />
+    {% endif %}
+
+    <!-- RSS Autodiscovery -->
+    {% if theme.site.rss.enabled %}
+    <link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="{{ url_for(theme.site.rss.path) }}" />
+    {% endif %}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="{% if is_post() %}article{% else %}website{% endif %}" />
+    <meta property="og:title" content="{% if is_post() or is_page() %}{{ page.title }}{% else %}{{ config.title }}{% endif %}" />
+    <meta property="og:description" content="{{ pageDescription | striptags | trim }}" />
+    <meta property="og:url" content="{{ config.url }}{{ url_for(page.path) }}" />
+    <meta property="og:site_name" content="{{ config.title }}" />
+    <meta property="og:locale" content="zh_CN" />
+    {% if is_post() %}
+        {% if page.cover %}
+            <meta property="og:image" content="{{ config.url }}{{ url_for(page.cover) }}" />
+        {% elif page.photos and page.photos.length > 0 %}
+            <meta property="og:image" content="{{ config.url }}{{ url_for(page.photos[0]) }}" />
+        {% elif theme.seo and theme.seo.default_image %}
+            <meta property="og:image" content="{{ config.url }}{{ url_for(theme.seo.default_image) }}" />
+        {% endif %}
+        <meta property="article:published_time" content="{{ page.date.toISOString() }}" />
+        {% if page.updated %}
+        <meta property="article:modified_time" content="{{ page.updated.toISOString() }}" />
+        {% endif %}
+        <meta property="article:author" content="{{ config.author }}" />
+        {% if page.tags and page.tags.length > 0 %}
+            {% for tag in page.tags.toArray() %}
+            <meta property="article:tag" content="{{ tag.name }}" />
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        {% if theme.seo and theme.seo.default_image %}
+        <meta property="og:image" content="{{ config.url }}{{ url_for(theme.seo.default_image) }}" />
+        {% endif %}
+    {% endif %}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{% if is_post() or is_page() %}{{ page.title }}{% else %}{{ config.title }}{% endif %}" />
+    <meta name="twitter:description" content="{{ pageDescription | striptags | trim }}" />
+    {% if theme.seo and theme.seo.twitter_site %}
+    <meta name="twitter:site" content="@{{ theme.seo.twitter_site }}" />
+    {% endif %}
+    {% if is_post() %}
+        {% if page.cover %}
+            <meta name="twitter:image" content="{{ config.url }}{{ url_for(page.cover) }}" />
+        {% elif page.photos and page.photos.length > 0 %}
+            <meta name="twitter:image" content="{{ config.url }}{{ url_for(page.photos[0]) }}" />
+        {% elif theme.seo and theme.seo.default_image %}
+            <meta name="twitter:image" content="{{ config.url }}{{ url_for(theme.seo.default_image) }}" />
+        {% endif %}
+    {% elif theme.seo and theme.seo.default_image %}
+        <meta name="twitter:image" content="{{ config.url }}{{ url_for(theme.seo.default_image) }}" />
+    {% endif %}
+
+    <!-- JSON-LD Structured Data -->
+    {% if is_post() %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "{{ config.url }}{{ url_for(page.path) }}"
+        },
+        "headline": "{{ page.title | escape }}",
+        "description": "{{ pageDescription | striptags | trim | escape }}",
+        {% if page.cover %}
+        "image": "{{ config.url }}{{ url_for(page.cover) }}",
+        {% elif page.photos and page.photos.length > 0 %}
+        "image": "{{ config.url }}{{ url_for(page.photos[0]) }}",
+        {% endif %}
+        "datePublished": "{{ page.date.toISOString() }}",
+        "dateModified": "{{ (page.updated or page.date).toISOString() }}",
+        "author": {
+            "@type": "Person",
+            "name": "{{ config.author }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{% if theme.seo and theme.seo.publisher %}{{ theme.seo.publisher.name }}{% else %}{{ config.title }}{% endif %}",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ config.url }}{% if theme.seo and theme.seo.publisher %}{{ url_for(theme.seo.publisher.logo) }}{% else %}{{ url_for(theme.site.favicon) }}{% endif %}"
+            }
+        }
+        {% if page.tags and page.tags.length > 0 %}
+        ,"keywords": "{% for tag in page.tags.toArray() %}{{ tag.name }}{% if not loop.last %}, {% endif %}{% endfor %}"
+        {% endif %}
+    }
+    </script>
+    {% elif is_home() %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "{{ config.title }}",
+        "description": "{{ config.description }}",
+        "url": "{{ config.url }}",
+        "author": {
+            "@type": "Person",
+            "name": "{{ config.author }}"
+        }
+    }
+    </script>
     {% endif %}
 
     <!-- CSS -->
